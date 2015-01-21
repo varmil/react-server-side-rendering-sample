@@ -8,7 +8,7 @@ var React = require('react'),
 
 module.exports = function() {
   return (
-    <Route name="app" path="/" handler={App}>
+    <Route name="app" path="/videos" handler={App}>
       <Route name="youtube" handler={YouTube} />
       <Route name="vimeo" handler={Vimeo} />
       <DefaultRoute handler={Top} />

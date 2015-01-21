@@ -6,10 +6,12 @@ var express     = require('express'),
     fs          = require('fs'),
     browserify  = require('browserify'),
     reactify    = require('reactify'),
-    Handlebars  = require('handlebars'),
     React       = require('react'),
     Router      = require('react-router')
 ;
+
+require('hbs');
+app.set('view engine', 'hbs');
 
 var data = {
   youtube: [
@@ -29,8 +31,6 @@ var data = {
 require('node-jsx').install({ harmony: true });
 var routes = require('./routes')();
 
-var template = Handlebars.compile(fs.readFileSync('./index.hbs').toString());
-
 app.get('/bundle.js', function(req, res) {
   res.setHeader('content-type', 'application/javascript');
   browserify('./browser')
@@ -40,12 +40,31 @@ app.get('/bundle.js', function(req, res) {
   ;
 });
 
-app.use(function(req, res) {
+// 全routingに対して、reactを使う場合
+// var Handlebars  = require('handlebars');
+// var template = Handlebars.compile(fs.readFileSync('./index.hbs').toString());
+// app.use(function(req, res) {
+//   Router.run(routes, req.path, function(Handler) {
+//     res.send(template({
+//       initialData: JSON.stringify(data),
+//       markup: React.renderToString(React.createElement(Handler, {params: {videos: data}}))
+//     }));
+//   });
+// });
+
+app.get(/^\/videos/, function(req, res) {
+  console.log('req.path is ', req.path);
   Router.run(routes, req.path, function(Handler) {
-    res.send(template({
+    res.render('index', {
       initialData: JSON.stringify(data),
       markup: React.renderToString(React.createElement(Handler, {params: {videos: data}}))
-    }));
+    });
+  });
+});
+
+app.get('/hoge', function(req, res) {
+  res.render('hoge', {
+    foo: 'HELLO FOO'
   });
 });
 
